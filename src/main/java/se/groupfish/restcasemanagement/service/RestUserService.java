@@ -5,6 +5,7 @@ import static se.groupfish.restcasemanagement.data.DTOUser.usersListToDTOUserLis
 
 import java.util.List;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
@@ -13,6 +14,7 @@ import static se.groupfish.restcasemanagement.data.DTOUser.toDTO;
 import org.springframework.stereotype.Component;
 
 import se.groupfish.restcasemanagement.data.DTOUser;
+import se.groupfish.restcasemanagement.exception.NullPointException;
 import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.model.User;
 import se.groupfish.springcasemanagement.service.UserService;
@@ -28,21 +30,23 @@ public final class RestUserService {
 
 	public User saveUser(DTOUser dtoUser) throws ServiceException {
 
+		User savedUser = toEntity(dtoUser);
 		try {
-			User savedUser = toEntity(dtoUser);
 			return userService.createUser(savedUser);
+		} catch (BadRequestException e) {
+			throw new BadRequestException();
 		} catch (NullPointerException e) {
-			throw new WebApplicationException(Status.NO_CONTENT);
+			throw new NullPointException();
 		}
 	}
 
 	public void updateUser(Long userId, String userName) throws ServiceException {
 
+		User userForUpdate = userService.getUserById(userId);
 		try {
-			User userForUpdate = userService.getUserById(userId);
 			userService.updateUserUsername(userForUpdate.getId(), userName);
 		} catch (NullPointerException e) {
-			throw new WebApplicationException(Status.NO_CONTENT);
+			throw new NullPointException();
 		}
 	}
 
