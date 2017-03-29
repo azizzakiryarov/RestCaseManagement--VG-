@@ -11,4 +11,7 @@ public class NullPointException extends WebApplicationException {
 		super(Status.NO_CONTENT);
 	}
 
+	public NullPointException(String message) {
+		super(Status.NO_CONTENT + message);
+	}
 }

@@ -2,17 +2,10 @@ package se.groupfish.restcasemanagement.service;
 
 import static se.groupfish.restcasemanagement.data.DTOUser.toEntity;
 import static se.groupfish.restcasemanagement.data.DTOUser.usersListToDTOUserList;
-
 import java.util.List;
-
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
 import static se.groupfish.restcasemanagement.data.DTOUser.toDTO;
-
 import org.springframework.stereotype.Component;
-
 import se.groupfish.restcasemanagement.data.DTOUser;
 import se.groupfish.restcasemanagement.exception.NullPointException;
 import se.groupfish.springcasemanagement.exception.ServiceException;
@@ -28,35 +21,39 @@ public final class RestUserService {
 		this.userService = userService;
 	}
 
-	public User saveUser(DTOUser dtoUser) throws ServiceException {
+	public User saveUser(DTOUser dtoUser) {
 
-		User savedUser = toEntity(dtoUser);
 		try {
+			User savedUser = toEntity(dtoUser);
 			return userService.createUser(savedUser);
-		} catch (BadRequestException e) {
-			throw new BadRequestException();
-		} catch (NullPointerException e) {
-			throw new NullPointException();
+		} catch (ServiceException e1) {
+			throw new BadRequestException(e1.getMessage());
+		} catch (NullPointerException e2) {
+			throw new NullPointException(e2.getMessage());
 		}
 	}
 
-	public void updateUser(Long userId, String userName) throws ServiceException {
+	public void updateUser(Long userId, String userName) {
 
-		User userForUpdate = userService.getUserById(userId);
 		try {
+			User userForUpdate = userService.getUserById(userId);
 			userService.updateUserUsername(userForUpdate.getId(), userName);
-		} catch (NullPointerException e) {
-			throw new NullPointException();
+		} catch (NullPointerException e1) {
+			throw new NullPointException(e1.getMessage());
+		} catch (ServiceException e2) {
+			throw new BadRequestException(e2.getMessage());
 		}
 	}
 
-	public void disableUser(Long id, String state) throws ServiceException {
+	public void disableUser(Long id, String state) {
 
 		try {
 			User userForDisactivate = userService.getUserById(id);
 			userService.updateUserState(userForDisactivate.getId(), state);
-		} catch (NullPointerException e) {
-			throw new WebApplicationException(Status.NO_CONTENT);
+		} catch (NullPointerException e1) {
+			throw new NullPointException(e1.getMessage());
+		} catch (ServiceException e2) {
+			throw new BadRequestException(e2.getMessage());
 		}
 	}
 
