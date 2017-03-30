@@ -1,6 +1,5 @@
 package se.groupfish.restcasemanagement.exception;
 
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;

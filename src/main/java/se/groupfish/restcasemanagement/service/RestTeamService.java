@@ -10,6 +10,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
 import se.groupfish.restcasemanagement.data.DTOTeam;
+import se.groupfish.restcasemanagement.exception.BadRequestException;
 import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.model.Team;
 import se.groupfish.springcasemanagement.model.User;
@@ -72,14 +73,17 @@ public final class RestTeamService {
 
 	}
 
-	public void addUserToOneTeam(Long teamId, Long userId) throws ServiceException {
+	public void addUserToOneTeam(Long teamId, Long userId) {
 
-		User userAddToTeam = userService.getUserById(userId);
-		Team teamToUser = teamService.getTeamById(teamId);
-		userAddToTeam.setTeam(teamToUser);
-		teamService.addUserToTeam(teamId, userAddToTeam.getId());
+		try {
+			User userAddToTeam = userService.getUserById(userId);
+			Team teamToUser = teamService.getTeamById(teamId);
+			userAddToTeam.setTeam(teamToUser);
+			teamService.addUserToTeam(teamId, userAddToTeam.getId());
+		} catch (ServiceException e) {
+			throw new BadRequestException(e.getMessage());
+		}
 
 	}
-
 
 }

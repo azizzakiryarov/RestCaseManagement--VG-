@@ -7,8 +7,7 @@ public class BadRequestException extends WebApplicationException {
 
 	private static final long serialVersionUID = -3792867500952758785L;
 
-	public BadRequestException() {
-		super(Status.BAD_REQUEST);
+	public BadRequestException(String exception) {
+		super(Status.BAD_REQUEST + "  " + exception);
 	}
-
 }

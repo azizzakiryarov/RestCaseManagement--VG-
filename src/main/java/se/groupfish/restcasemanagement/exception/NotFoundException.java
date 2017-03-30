@@ -7,8 +7,8 @@ public class NotFoundException extends WebApplicationException {
 
 	private static final long serialVersionUID = -1163744052296700697L;
 	
-	public NotFoundException() {
-		super(Status.NOT_FOUND);
+	public NotFoundException(String exception) {
+		super(Status.NOT_FOUND + "  " + exception);
 		
 	}
 }

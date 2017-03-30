@@ -7,11 +7,7 @@ public class NullPointException extends WebApplicationException {
 
 	private static final long serialVersionUID = 2689445639589787390L;
 
-	public NullPointException() {
-		super(Status.NO_CONTENT);
-	}
-
 	public NullPointException(String message) {
-		super(Status.NO_CONTENT + message);
+		super(Status.NO_CONTENT + "  " + message);
 	}
 }

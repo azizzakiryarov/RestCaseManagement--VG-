@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import se.groupfish.restcasemanagement.data.DTOUser;
 import se.groupfish.restcasemanagement.service.RestTeamService;
 import se.groupfish.restcasemanagement.service.RestUserService;
-import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.model.User;
 
 @Component
@@ -41,7 +40,7 @@ public final class UserResource {
 	private UriInfo uriInfo;
 
 	@POST
-	public Response addUser(DTOUser dtoUser) throws ServiceException {
+	public Response addUser(DTOUser dtoUser) {
 
 		User savedUser = userService.saveUser(dtoUser);
 		URI location = uriInfo.getAbsolutePathBuilder().path(savedUser.getId().toString()).build();
@@ -50,8 +49,7 @@ public final class UserResource {
 
 	@PUT
 	@Path("{id}")
-	public Response updateAndInactivateUserAndAddUserToTeam(@PathParam("id") Long id, DTOUser dtoBody)
-			throws ServiceException {
+	public Response updateAndInactivateUserAndAddUserToTeam(@PathParam("id") Long id, DTOUser dtoBody) {
 
 		if (dtoBody != null && dtoBody.getUserName() != null) {
 			userService.updateUser(id, dtoBody.getUserName());
@@ -70,11 +68,11 @@ public final class UserResource {
 	}
 
 	@GET
-	public Response getUserByNumberFirstName(@QueryParam("number") String number,
-			@QueryParam("firstName") String firstName) throws ServiceException {
+	public Response getUserByNumberFirstName(@QueryParam("userNumber") String userNumber,
+			@QueryParam("firstName") String firstName) {
 
-		if (number != null) {
-			DTOUser toUserByNumber = userService.getUserByNumber(number);
+		if (userNumber != null) {
+			DTOUser toUserByNumber = userService.getUserByNumber(userNumber);
 			return Response.ok(toUserByNumber).build();
 		}
 		if (firstName != null) {
@@ -86,7 +84,7 @@ public final class UserResource {
 
 	@GET
 	@Path("{teamId}")
-	public Response getAllUsersByTeamId(@PathParam("teamId") Long teamId) throws ServiceException {
+	public Response getAllUsersByTeamId(@PathParam("teamId") Long teamId) {
 
 		if (teamId != null) {
 			List<DTOUser> getAllUsers = userService.getAllDTOUsers(teamId);
