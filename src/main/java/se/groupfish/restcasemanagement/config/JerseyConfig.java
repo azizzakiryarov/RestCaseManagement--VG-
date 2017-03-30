@@ -7,6 +7,7 @@ import se.groupfish.restcasemanagement.exception.BadRequestMapper;
 import se.groupfish.restcasemanagement.exception.ConflictExceptionMapper;
 import se.groupfish.restcasemanagement.exception.NotFoundExceptionMapper;
 import se.groupfish.restcasemanagement.exception.NullPointExceptionMapper;
+import se.groupfish.restcasemanagement.exception.WebInternalErrorExceptionMapper;
 import se.groupfish.restcasemanagement.resource.IssueResource;
 import se.groupfish.restcasemanagement.resource.TeamResource;
 import se.groupfish.restcasemanagement.resource.UserResource;
@@ -24,6 +25,7 @@ public class JerseyConfig extends ResourceConfig {
 		register(NotFoundExceptionMapper.class);
 		register(NullPointExceptionMapper.class);
 		register(ConflictExceptionMapper.class);
+		register(WebInternalErrorExceptionMapper.class);
 	}
 
 }

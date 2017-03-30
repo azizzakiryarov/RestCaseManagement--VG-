@@ -6,7 +6,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class NullPointExceptionMapper implements ExceptionMapper<NullPointException> {
+public final class NullPointExceptionMapper implements ExceptionMapper<NullPointException> {
 
 	@Override
 	public Response toResponse(NullPointException exception) {

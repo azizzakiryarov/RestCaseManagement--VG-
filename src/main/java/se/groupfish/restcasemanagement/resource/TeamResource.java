@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import se.groupfish.restcasemanagement.data.DTOTeam;
 import se.groupfish.restcasemanagement.service.RestTeamService;
-import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.model.Team;
 
 @Component
@@ -37,7 +36,7 @@ public final class TeamResource {
 	private UriInfo uriInfo;
 
 	@POST
-	public Response addTeam(DTOTeam dtoTeam) throws ServiceException {
+	public Response addTeam(DTOTeam dtoTeam) {
 
 		Team savedTeam = teamService.createTeam(dtoTeam);
 		URI location = uriInfo.getAbsolutePathBuilder().path(savedTeam.getId().toString()).build();
@@ -46,7 +45,7 @@ public final class TeamResource {
 
 	@PUT
 	@Path("{id}")
-	public Response updateAndInactivateTeam(@PathParam("id") Long id, DTOTeam dtoTeam) throws ServiceException {
+	public Response updateAndInactivateTeam(@PathParam("id") Long id, DTOTeam dtoTeam) {
 
 		if (dtoTeam != null && dtoTeam.getTeamName() != null) {
 			teamService.updateTeam(id, dtoTeam.getTeamName());
@@ -63,7 +62,7 @@ public final class TeamResource {
 	}
 
 	@GET
-	public Response getAllTeams(Collection<DTOTeam> dtoTeams) throws ServiceException {
+	public Response getAllTeams(Collection<DTOTeam> dtoTeams) {
 
 			Collection<DTOTeam> getAllTeams = teamService.getAllDTOTeams(dtoTeams);
 			return getAllTeams == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(getAllTeams).build();
