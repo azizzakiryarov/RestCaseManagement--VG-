@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.groupfish.restcasemanagement.data.DTOIssue;
 import se.groupfish.restcasemanagement.service.RestIssueService;
-import se.groupfish.springcasemanagement.exception.ServiceException;
 
 @Component
 @Path("issues")
@@ -25,7 +24,7 @@ public final class IssueResource {
 
 	@PUT
 	@Path("{issueId}")
-	public Response updateIssue(@PathParam("issueId") Long issueId, DTOIssue dtoIssue) throws ServiceException {
+	public Response updateIssue(@PathParam("issueId") Long issueId, DTOIssue dtoIssue) {
 
 		issueService.updateIssue(issueId, dtoIssue.getComment());
 		return Response.status(Status.OK).build();

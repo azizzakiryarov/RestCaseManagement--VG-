@@ -5,6 +5,7 @@ import static se.groupfish.restcasemanagement.data.DTOIssue.toEntity;
 import org.springframework.stereotype.Component;
 
 import se.groupfish.restcasemanagement.data.DTOIssue;
+import se.groupfish.restcasemanagement.exception.BadRequestException;
 import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.model.Issue;
 import se.groupfish.springcasemanagement.model.WorkItem;
@@ -22,19 +23,26 @@ public final class RestIssueService {
 		this.workItemService = workItemService;
 	}
 
-	public Issue saveIssue(DTOIssue dtoIssue, Long workItemId) throws ServiceException {
+	public Issue saveIssue(DTOIssue dtoIssue, Long workItemId) {
 
-		Issue savedIssue = toEntity(dtoIssue);
-		WorkItem savedWorkItem = workItemService.getWorkItemById(workItemId);
-		savedWorkItem.setIssue(savedIssue);
-		return issueService.createIssue(savedIssue, savedWorkItem.getId());
+		try {
+			Issue savedIssue = toEntity(dtoIssue);
+			WorkItem savedWorkItem = workItemService.getWorkItemById(workItemId);
+			savedWorkItem.setIssue(savedIssue);
+			return issueService.createIssue(savedIssue, savedWorkItem.getId());
+		} catch (ServiceException e) {
+			throw new BadRequestException(e.getMessage());
+		}
 
 	}
 
-	public void updateIssue(Long issueId, String comment) throws ServiceException {
+	public void updateIssue(Long issueId, String comment) {
 
-		Issue updatedIssue = issueService.getById(issueId);
-		issueService.updateIssueComment(updatedIssue.getId(), comment);
-
+		try {
+			Issue updatedIssue = issueService.getById(issueId);
+			issueService.updateIssueComment(updatedIssue.getId(), comment);
+		} catch (ServiceException e) {
+			throw new BadRequestException(e.getMessage());
+		}
 	}
 }

@@ -1,6 +1,5 @@
 package se.groupfish.restcasemanagement.resource;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 
@@ -18,15 +17,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.groupfish.restcasemanagement.data.DTOIssue;
 import se.groupfish.restcasemanagement.data.DTOWorkItem;
 import se.groupfish.restcasemanagement.service.RestIssueService;
 import se.groupfish.restcasemanagement.service.RestWorkItemService;
-import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.model.WorkItem;
 
 @Component
@@ -45,7 +41,7 @@ public final class WorkItemResource {
 	private UriInfo uriInfo;
 
 	@POST
-	public Response createWorkItem(DTOWorkItem dtoWorkItem) throws ServiceException {
+	public Response createWorkItem(DTOWorkItem dtoWorkItem) {
 
 		WorkItem savedWorkItem = workItemService.saveWorkItem(dtoWorkItem);
 		URI location = uriInfo.getAbsolutePathBuilder().path(savedWorkItem.getId().toString()).build();
@@ -54,8 +50,7 @@ public final class WorkItemResource {
 
 	@POST
 	@Path("{workitemId}")
-	public Response createIssueAndAddToWorkItem(DTOIssue dtoIssue, @PathParam("workitemId") Long workItemId)
-			throws ServiceException {
+	public Response createIssueAndAddToWorkItem(DTOIssue dtoIssue, @PathParam("workitemId") Long workItemId) {
 
 		issueService.saveIssue(dtoIssue, workItemId);
 		return Response.status(Status.OK).build();
@@ -63,8 +58,7 @@ public final class WorkItemResource {
 
 	@PUT
 	@Path("{id}")
-	public Response updateWorkItemsStateAndAddWorkItemToUser(@PathParam("id") Long id, DTOWorkItem dtoWorkItem)
-			throws ServiceException, IOException {
+	public Response updateWorkItemsStateAndAddWorkItemToUser(@PathParam("id") Long id, DTOWorkItem dtoWorkItem) {
 
 		if (dtoWorkItem != null && dtoWorkItem.getState() != null) {
 			workItemService.updateWorkItemsState(id, dtoWorkItem.getState());
@@ -79,7 +73,7 @@ public final class WorkItemResource {
 
 	@DELETE
 	@Path("{id}")
-	public Response removeWorkItem(@PathParam("id") Long id) throws ServiceException {
+	public Response removeWorkItem(@PathParam("id") Long id) {
 
 		workItemService.removeWorkItem(id);
 		return Response.status(Status.OK).build();
@@ -87,32 +81,27 @@ public final class WorkItemResource {
 
 	@GET
 	public Response getAllWorkItemsByStateByTeamIdByUserId(@QueryParam("state") String state,
-			@QueryParam("teamId") Long teamId, @QueryParam("userId") Long userId) throws ServiceException {
+			@QueryParam("teamId") Long teamId, @QueryParam("userId") Long userId) {
 
-		Collection<DTOWorkItem> getAllWorkItems;
+		Collection<DTOWorkItem> getAllWorkItems = null;
 
 		if (state != null) {
 			getAllWorkItems = workItemService.getAllDTOWorkItemsByState(state);
-			return Response.ok(getAllWorkItems).build();
 		}
 
-		if (teamId != null) {
+		else if (teamId != null) {
 			getAllWorkItems = workItemService.getAllDTOWorkItemsByTeam(teamId);
-			return Response.ok(getAllWorkItems).build();
 		}
 
-		if (userId != null) {
+		else if (userId != null) {
 			getAllWorkItems = workItemService.getAllDTOWorkItemsByUser(userId);
-			return Response.ok(getAllWorkItems).build();
-
 		}
-		return Response.status(Status.BAD_REQUEST).build();
+		return Response.ok(getAllWorkItems).build();
 	}
 
 	@GET
 	@Path("{descriptionContent}")
-	public Response getAllWorkItemByDescriptionContent(@PathParam("descriptionContent") String descriptionContent)
-			throws ServiceException {
+	public Response getAllWorkItemByDescriptionContent(@PathParam("descriptionContent") String descriptionContent) {
 
 		Collection<DTOWorkItem> getAllWorkItemsByDescription;
 
@@ -126,8 +115,7 @@ public final class WorkItemResource {
 
 	@GET
 	@Path("/getAllWorkItemsWithIssues/{getAll}")
-	public Response getAllWorkItemWithIssues(@PathParam("getAll") String getAll)
-			throws ServiceException {
+	public Response getAllWorkItemWithIssues(@PathParam("getAll") String getAll) {
 
 		Collection<DTOWorkItem> getAllWorkItemWithIssues;
 
