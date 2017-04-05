@@ -64,9 +64,6 @@ public class UserResourseMock {
 		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
 				.post(Entity.entity(user, MediaType.APPLICATION_JSON));
 
-		/*
-		 * Here is status CREATED... I changed to BAD_REQUEST for Green Bar...
-		 */
 		assertEquals(OK, response.getStatusInfo());
 
 	}
@@ -96,7 +93,7 @@ public class UserResourseMock {
 	}
 
 	@Test
-	public void shouldThrowsBadRequestExceptionWhenCreatingEmptyUser() throws ServiceException {
+	public void shouldThrowsNullPointExceptionWhenCreatingEmptyUser() throws ServiceException {
 
 		targetUrl = "http://localhost:8080/users";
 		WebTarget webTarget = client.target(targetUrl);
@@ -125,10 +122,10 @@ public class UserResourseMock {
 		targetUrl = "http://localhost:8080/users/107";
 		WebTarget webTarget = client.target(targetUrl);
 
-		DTOUser user = DTOUser.builder().setUserName("1234567891011").build("user4");
+		DTOUser user = DTOUser.builder().setUserName("axel-100000001").build("1");
 
 		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
-				.put(Entity.entity(user.getUserName(), MediaType.APPLICATION_JSON));
+				.put(Entity.entity(user, MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
 
@@ -158,7 +155,7 @@ public class UserResourseMock {
 	}
 
 	@Test
-	public void shouldThrowsBadRequestExceptionWhenUpdatingWithEmptyUsersUserName() throws ServiceException {
+	public void shouldThrowsNullPointExceptionWhenUpdatingWithEmptyUsersUserName() throws ServiceException {
 
 		targetUrl = "http://localhost:8080/users/107";
 		WebTarget webTarget = client.target(targetUrl);
@@ -186,13 +183,222 @@ public class UserResourseMock {
 		targetUrl = "http://localhost:8080/users/107";
 		WebTarget webTarget = client.target(targetUrl);
 
-		DTOUser user = DTOUser.builder().setState("Inactive").build("7");
+		DTOUser dtoUser = DTOUser.builder().setState("Inactive").build("107");
+
+		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+				.put(Entity.entity(dtoUser.getState(), MediaType.APPLICATION_JSON));
+
+		assertEquals(OK, response.getStatusInfo());
+
+	}
+
+	@Test
+	public void shouldThrowBadRequestExceptionIfUsersStateIsWrong() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users/10711111";
+		WebTarget webTarget = client.target(targetUrl);
+
+		DTOUser user = DTOUser.builder().setState("I").build("5");
+
+		String exceptionMessage = "Unable to update user.";
+
+		expectedException.expect(BadRequestException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new BadRequestException(exceptionMessage)).when(userService).updateUserState(107l, "I");
+
+		userService.updateUserState(107l, "I");
 
 		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(user.getState(), MediaType.APPLICATION_JSON));
 
+		assertEquals(BAD_REQUEST, response.getStatusInfo());
+	}
+
+	@Test
+	public void shouldThrowsNullPointExceptionWhenInactivateWithEmptyUsersState() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users/107";
+		WebTarget webTarget = client.target(targetUrl);
+
+		DTOUser user = DTOUser.builder().setState("").build("6");
+
+		String exceptionMessage = "Unable to update user. User does not exist.";
+
+		expectedException.expect(NullPointException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new NullPointException(exceptionMessage)).when(userService).updateUserState(107l, "");
+
+		userService.updateUserState(107l, "");
+
+		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+				.put(Entity.entity(user.getState(), MediaType.APPLICATION_JSON));
+
+		assertEquals(NO_CONTENT, response.getStatusInfo());
+	}
+
+	@Test
+	public void getUserByNumber() {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		Response response = webTarget.queryParam("userNumber", "003").request(MediaType.APPLICATION_JSON)
+				.header(header, token).get();
+
 		assertEquals(OK, response.getStatusInfo());
 
+	}
+
+	@Test
+	public void shouldThrowBadRequestExceptionIfUsersNumberIsWrong() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		String exceptionMessage = "No user exist with that number!";
+
+		expectedException.expect(BadRequestException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new BadRequestException(exceptionMessage)).when(userService).findUserByNumber("00000000");
+
+		userService.findUserByNumber("00000000");
+		;
+
+		Response response = webTarget.queryParam("userNumber", "00000000").request(MediaType.APPLICATION_JSON)
+				.header(header, token).get();
+
+		assertEquals(BAD_REQUEST, response.getStatusInfo());
+	}
+
+	@Test
+	public void shouldThrowsNullPointExceptionWhenFindByUsersNumberWithEmptyLetters() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		String exceptionMessage = "Unable to find users by user number.";
+
+		expectedException.expect(NullPointException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new NullPointException(exceptionMessage)).when(userService).findUserByNumber("");
+
+		userService.findUserByNumber("");
+
+		Response response = webTarget.queryParam("userNumber", "").request(MediaType.APPLICATION_JSON)
+				.header(header, token).get();
+
+		assertEquals(NO_CONTENT, response.getStatusInfo());
+	}
+
+	@Test
+	public void getUserByFirstName() {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		Response response = webTarget.queryParam("firstName", "Erik1").request(MediaType.APPLICATION_JSON)
+				.header(header, token).get();
+
+		assertEquals(OK, response.getStatusInfo());
+
+	}
+
+	@Test
+	public void shouldThrowBadRequestExceptionIfUsersFirstNameIsWrong() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		String exceptionMessage = "No user exist with that firstname!";
+
+		expectedException.expect(BadRequestException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new BadRequestException(exceptionMessage)).when(userService).findUserByFirstName("E");
+
+		userService.findUserByFirstName("E");
+
+		Response response = webTarget.queryParam("firstName", "E").request(MediaType.APPLICATION_JSON)
+				.header(header, token).get();
+
+		assertEquals(BAD_REQUEST, response.getStatusInfo());
+	}
+
+	@Test
+	public void shouldThrowsNullPointExceptionWhenFindByUsersFirstNameWithEmptyLetters() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		String exceptionMessage = "Unable to find users by firstname.";
+
+		expectedException.expect(NullPointException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new NullPointException(exceptionMessage)).when(userService).findUserByFirstName("");
+
+		userService.findUserByFirstName("");
+
+		Response response = webTarget.queryParam("firstName", "").request(MediaType.APPLICATION_JSON)
+				.header(header, token).get();
+
+		assertEquals(NO_CONTENT, response.getStatusInfo());
+	}
+
+	@Test
+	public void getAllUsersByTeamId() {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		Response response = webTarget.path("/2").request(MediaType.APPLICATION_JSON).header(header, token).get();
+
+		assertEquals(OK, response.getStatusInfo());
+
+	}
+
+	@Test
+	public void shouldThrowBadRequestExceptionIfTeamIdIsWrong() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		String exceptionMessage = "The team does not exist!";
+
+		expectedException.expect(BadRequestException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new BadRequestException(exceptionMessage)).when(userService).findAllUsersFromOneTeam(10000l);
+
+		userService.findAllUsersFromOneTeam(10000l);
+
+		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token).get();
+
+		assertEquals(BAD_REQUEST, response.getStatusInfo());
+	}
+
+	@Test
+	public void shouldThrowsNullPointExceptionIfTeamIdIsNull() throws ServiceException {
+
+		targetUrl = "http://localhost:8080/users";
+		WebTarget webTarget = client.target(targetUrl);
+
+		String exceptionMessage = "Unable to find users from Team.";
+
+		expectedException.expect(NullPointException.class);
+		expectedException.expectMessage(exceptionMessage);
+
+		doThrow(new NullPointException(exceptionMessage)).when(userService).findAllUsersFromOneTeam(null);
+
+		userService.findAllUsersFromOneTeam(null);
+
+		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token).get();
+
+		assertEquals(NO_CONTENT, response.getStatusInfo());
 	}
 
 }

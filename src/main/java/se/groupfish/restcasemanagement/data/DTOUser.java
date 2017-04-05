@@ -84,7 +84,7 @@ public final class DTOUser {
 	public Long getTeamId() {
 		return teamId;
 	}
-
+	
 	public static DTOUser toDTO(User entity) {
 
 		DTOUserBuilder builder = new DTOUserBuilder();
