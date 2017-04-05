@@ -1,16 +1,14 @@
 package se.groupfish;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+import se.groupfish.testrestcasemanagement.testresourse.UserResourseMock;
+
+
+@RunWith(Suite.class)
+@SuiteClasses({UserResourseMock.class})
 public class RestCaseManagementApplicationTests {
-
-	@Test
-	public void contextLoads() {
-	}
 
 }

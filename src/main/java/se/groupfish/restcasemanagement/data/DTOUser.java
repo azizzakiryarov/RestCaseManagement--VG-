@@ -8,7 +8,7 @@ import se.groupfish.springcasemanagement.model.User;
 
 public final class DTOUser {
 
-	private final Long id;
+	private Long id;
 	private final String firstName;
 	private final String lastName;
 	private final String userName;
@@ -16,7 +16,15 @@ public final class DTOUser {
 	private final String state;
 	private Long teamId;
 
-	private DTOUser(Long id, String firstName, String lastName, String userName, String userNumber, String state) {
+	public DTOUser(String firstName, String lastName, String userName, String userNumber, String state) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.userName = userName;
+		this.userNumber = userNumber;
+		this.state = state;
+	}
+
+	public DTOUser(Long id, String firstName, String lastName, String userName, String userNumber, String state) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -25,7 +33,7 @@ public final class DTOUser {
 		this.state = state;
 	}
 
-	private DTOUser(Long id, String firstName, String lastName, String userName, String userNumber, String state,
+	public DTOUser(Long id, String firstName, String lastName, String userName, String userNumber, String state,
 			Long teamId) {
 		this.id = id;
 		this.firstName = firstName;
@@ -36,7 +44,7 @@ public final class DTOUser {
 		this.teamId = teamId;
 	}
 
-	private DTOUser() {
+	public DTOUser() {
 		this.id = null;
 		this.firstName = null;
 		this.lastName = null;
@@ -155,5 +163,6 @@ public final class DTOUser {
 		public DTOUser build(String dtoUser) {
 			return new DTOUser(id, firstName, lastName, userName, userNumber, state, teamId);
 		}
+		
 	}
 }
