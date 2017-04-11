@@ -25,10 +25,16 @@ import se.groupfish.restcasemanagement.exception.BadRequestException;
 import se.groupfish.restcasemanagement.exception.NullPointException;
 import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.service.UserService;
+
 import static se.groupfish.restcasemanagement.data.DTOUser.toEntity;
 
 @RunWith(SpringRunner.class)
 public class UserResourseMock {
+
+	/*
+	 * - När en User inaktivares ändras status på alla dennes WorkItem till
+	 * Unstarted ---> fix it
+	 */
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -117,7 +123,7 @@ public class UserResourseMock {
 	}
 
 	@Test
-	public void updateUser() throws ServiceException {
+	public void shouldUpdateUser() throws ServiceException {
 
 		targetUrl = "http://localhost:8080/users/107";
 		WebTarget webTarget = client.target(targetUrl);
@@ -178,15 +184,15 @@ public class UserResourseMock {
 	}
 
 	@Test
-	public void disableUser() throws ServiceException {
+	public void shouldInactivateUser() throws ServiceException {            //!!! Fix it
 
-		targetUrl = "http://localhost:8080/users/107";
+		targetUrl = "http://localhost:8080/users/12";
 		WebTarget webTarget = client.target(targetUrl);
 
-		DTOUser dtoUser = DTOUser.builder().setState("Inactive").build("107");
+		DTOUser dtoUser = DTOUser.builder().setState("Inactive").build("12");
 
 		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
-				.put(Entity.entity(dtoUser.getState(), MediaType.APPLICATION_JSON));
+				.put(Entity.entity(dtoUser, MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
 
@@ -195,7 +201,7 @@ public class UserResourseMock {
 	@Test
 	public void shouldThrowBadRequestExceptionIfUsersStateIsWrong() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users/10711111";
+		targetUrl = "http://localhost:8080/users/107";
 		WebTarget webTarget = client.target(targetUrl);
 
 		DTOUser user = DTOUser.builder().setState("I").build("5");

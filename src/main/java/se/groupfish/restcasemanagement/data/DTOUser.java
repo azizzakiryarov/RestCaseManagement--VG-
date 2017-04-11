@@ -163,6 +163,7 @@ public final class DTOUser {
 		public DTOUser build(String dtoUser) {
 			return new DTOUser(id, firstName, lastName, userName, userNumber, state, teamId);
 		}
+
 		
 	}
 }
