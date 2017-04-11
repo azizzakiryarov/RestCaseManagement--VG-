@@ -79,7 +79,7 @@ public final class UserResource {
 			DTOUser toUser = userService.getUserByFirstName(firstName);
 			return Response.ok(toUser).build();
 		}
-		return Response.status(Status.BAD_REQUEST).build();
+		return Response.status(Status.NOT_FOUND).build();
 	}
 
 	@GET

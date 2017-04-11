@@ -4,7 +4,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 
 import se.groupfish.restcasemanagement.exception.BadRequestMapper;
-import se.groupfish.restcasemanagement.exception.ConflictExceptionMapper;
 import se.groupfish.restcasemanagement.exception.NotFoundExceptionMapper;
 import se.groupfish.restcasemanagement.exception.NullPointExceptionMapper;
 import se.groupfish.restcasemanagement.exception.WebInternalErrorExceptionMapper;
@@ -15,7 +14,7 @@ import se.groupfish.restcasemanagement.resource.UserResource;
 import se.groupfish.restcasemanagement.resource.WorkItemResource;
 
 @Component
-public class JerseyConfig extends ResourceConfig {
+public final class JerseyConfig extends ResourceConfig {
 
 	public JerseyConfig() {
 		register(UserResource.class);
@@ -25,7 +24,6 @@ public class JerseyConfig extends ResourceConfig {
 		register(BadRequestMapper.class);
 		register(NotFoundExceptionMapper.class);
 		register(NullPointExceptionMapper.class);
-		register(ConflictExceptionMapper.class);
 		register(WebInternalErrorExceptionMapper.class);
 		register(RequestFilter.class);
 	}

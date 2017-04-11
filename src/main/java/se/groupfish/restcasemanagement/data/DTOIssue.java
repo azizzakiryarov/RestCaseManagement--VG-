@@ -21,7 +21,7 @@ public final class DTOIssue {
 		this.comment = null;
 	}
 
-	public DTOIssueBuilder builder() {
+	public static DTOIssueBuilder builder() {
 		return new DTOIssueBuilder();
 	}
 
@@ -37,12 +37,14 @@ public final class DTOIssue {
 
 		DTOIssueBuilder builder = new DTOIssueBuilder();
 		builder.setId(entity.getId()).setComment(entity.getComment());
+
 		return builder.build(entity.toString());
 	}
 
 	public static Issue toEntity(DTOIssue dataTransferObject) {
 
 		Issue issue = new Issue(dataTransferObject.getComment());
+
 		return issue;
 	}
 
@@ -58,6 +60,10 @@ public final class DTOIssue {
 
 		private Long id = null;
 		private String comment = "";
+
+		private DTOIssueBuilder() {
+			;
+		}
 
 		public DTOIssueBuilder setId(Long id) {
 			this.id = id;

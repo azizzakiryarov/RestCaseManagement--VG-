@@ -33,7 +33,6 @@ public final class RestIssueService {
 		} catch (ServiceException e) {
 			throw new BadRequestException(e.getMessage());
 		}
-
 	}
 
 	public void updateIssue(Long issueId, String comment) {

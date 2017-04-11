@@ -54,7 +54,7 @@ public final class TeamResource {
 		if (id != null && dtoTeam.getState().equals("Inactive")) {
 			teamService.disableTeam(id);
 			return Response.status(Status.OK).build();
-		} else if (id != null && dtoTeam.getState().equals("Active")){
+		} else if (id != null && dtoTeam.getState().equals("Active")) {
 			teamService.activateTeam(id);
 			return Response.status(Status.OK).build();
 		}
@@ -64,7 +64,7 @@ public final class TeamResource {
 	@GET
 	public Response getAllTeams(Collection<DTOTeam> dtoTeams) {
 
-			Collection<DTOTeam> getAllTeams = teamService.getAllDTOTeams(dtoTeams);
-			return getAllTeams == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(getAllTeams).build();
+		Collection<DTOTeam> getAllTeams = teamService.getAllDTOTeams(dtoTeams);
+		return getAllTeams == null ? Response.status(Status.OK).build() : Response.ok(getAllTeams).build();
 	}
 }

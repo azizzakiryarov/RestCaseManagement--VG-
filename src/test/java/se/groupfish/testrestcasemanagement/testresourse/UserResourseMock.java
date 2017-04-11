@@ -2,9 +2,11 @@ package se.groupfish.testrestcasemanagement.testresourse;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -12,6 +14,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,12 +32,7 @@ import se.groupfish.springcasemanagement.service.UserService;
 import static se.groupfish.restcasemanagement.data.DTOUser.toEntity;
 
 @RunWith(SpringRunner.class)
-public class UserResourseMock {
-
-	/*
-	 * - När en User inaktivares ändras status på alla dennes WorkItem till
-	 * Unstarted ---> fix it
-	 */
+public final class UserResourseMock {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -43,8 +41,8 @@ public class UserResourseMock {
 	private UserService userService;
 
 	private static Client client;
-
-	private String targetUrl;
+	private static String targetUrl;
+	private static WebTarget webTarget;
 
 	private final String header = "Authorization";
 	private final String token = "auth";
@@ -54,31 +52,27 @@ public class UserResourseMock {
 		client = ClientBuilder.newClient();
 	}
 
-	@Test
-	public void saveUser() throws ServiceException {
-
+	@Before
+	public void Url() {
 		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
+		webTarget = client.target(targetUrl);
+	}
 
-		DTOUser user = DTOUser.builder().setFirstName("Simon").setLastName("Axelsson").setUserName("simonaxelsson")
-				.setUserNumber("simon-001").setState("Active").build("1");
+	@Test
+	public void shouldSaveUser() throws ServiceException {
 
-		when(userService.createUser(toEntity(user))).thenReturn(toEntity(user));
-
-		userService.createUser(toEntity(user));
+		DTOUser user = DTOUser.builder().setFirstName("Alexander").setLastName("Makidonskiy")
+				.setUserName("alexandermakidonskiy").setUserNumber("alex-10000000").setState("Active").build("1");
 
 		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
 				.post(Entity.entity(user, MediaType.APPLICATION_JSON));
 
-		assertEquals(OK, response.getStatusInfo());
+		assertEquals(CREATED, response.getStatusInfo());
 
 	}
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfUserIsAlreadyExists() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOUser user = DTOUser.builder().setFirstName("Ahmad").setLastName("Sultan").setUserName("ahmsul-9999")
 				.setUserNumber("ahmad-001").setState("Active").build("2");
@@ -101,9 +95,6 @@ public class UserResourseMock {
 	@Test
 	public void shouldThrowsNullPointExceptionWhenCreatingEmptyUser() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
-
 		DTOUser user = DTOUser.builder().setFirstName("").setLastName("").setUserName("").setUserNumber("").setState("")
 				.build("3");
 
@@ -125,12 +116,9 @@ public class UserResourseMock {
 	@Test
 	public void shouldUpdateUser() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users/107";
-		WebTarget webTarget = client.target(targetUrl);
+		DTOUser user = DTOUser.builder().setUserName("axel-200001212212").build("1");
 
-		DTOUser user = DTOUser.builder().setUserName("axel-100000001").build("1");
-
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/107").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(user, MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
@@ -139,9 +127,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfUserUserNameIsLessThanTenLetter() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users/107";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOUser user = DTOUser.builder().setUserName("amerika").build("5");
 
@@ -154,7 +139,7 @@ public class UserResourseMock {
 
 		userService.updateUserUsername(107l, "amerika");
 
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/107").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(user.getUserName(), MediaType.APPLICATION_JSON));
 
 		assertEquals(BAD_REQUEST, response.getStatusInfo());
@@ -162,9 +147,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowsNullPointExceptionWhenUpdatingWithEmptyUsersUserName() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users/107";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOUser user = DTOUser.builder().setUserName("").build("6");
 
@@ -177,22 +159,19 @@ public class UserResourseMock {
 
 		userService.updateUserUsername(107l, "");
 
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("107").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(user.getUserName(), MediaType.APPLICATION_JSON));
 
 		assertEquals(NO_CONTENT, response.getStatusInfo());
 	}
 
 	@Test
-	public void shouldInactivateUser() throws ServiceException {            //!!! Fix it
+	public void shouldInactivateUser() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users/12";
-		WebTarget webTarget = client.target(targetUrl);
+		DTOUser dtoUser = DTOUser.builder().setState("Inactive").build("aaaa");
 
-		DTOUser dtoUser = DTOUser.builder().setState("Inactive").build("12");
-
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
-				.put(Entity.entity(dtoUser, MediaType.APPLICATION_JSON));
+		Response response = webTarget.path("/13").request(MediaType.APPLICATION_JSON).header(header, token)
+				.put(Entity.entity(dtoUser.getState(), MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
 
@@ -200,9 +179,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfUsersStateIsWrong() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users/107";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOUser user = DTOUser.builder().setState("I").build("5");
 
@@ -215,7 +191,7 @@ public class UserResourseMock {
 
 		userService.updateUserState(107l, "I");
 
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/107").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(user.getState(), MediaType.APPLICATION_JSON));
 
 		assertEquals(BAD_REQUEST, response.getStatusInfo());
@@ -223,9 +199,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowsNullPointExceptionWhenInactivateWithEmptyUsersState() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users/107";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOUser user = DTOUser.builder().setState("").build("6");
 
@@ -238,7 +211,7 @@ public class UserResourseMock {
 
 		userService.updateUserState(107l, "");
 
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/107").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(user.getState(), MediaType.APPLICATION_JSON));
 
 		assertEquals(NO_CONTENT, response.getStatusInfo());
@@ -246,9 +219,6 @@ public class UserResourseMock {
 
 	@Test
 	public void getUserByNumber() {
-
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
 
 		Response response = webTarget.queryParam("userNumber", "003").request(MediaType.APPLICATION_JSON)
 				.header(header, token).get();
@@ -259,9 +229,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfUsersNumberIsWrong() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
 
 		String exceptionMessage = "No user exist with that number!";
 
@@ -282,9 +249,6 @@ public class UserResourseMock {
 	@Test
 	public void shouldThrowsNullPointExceptionWhenFindByUsersNumberWithEmptyLetters() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
-
 		String exceptionMessage = "Unable to find users by user number.";
 
 		expectedException.expect(NullPointException.class);
@@ -303,9 +267,6 @@ public class UserResourseMock {
 	@Test
 	public void getUserByFirstName() {
 
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
-
 		Response response = webTarget.queryParam("firstName", "Erik1").request(MediaType.APPLICATION_JSON)
 				.header(header, token).get();
 
@@ -315,9 +276,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfUsersFirstNameIsWrong() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
 
 		String exceptionMessage = "No user exist with that firstname!";
 
@@ -337,9 +295,6 @@ public class UserResourseMock {
 	@Test
 	public void shouldThrowsNullPointExceptionWhenFindByUsersFirstNameWithEmptyLetters() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
-
 		String exceptionMessage = "Unable to find users by firstname.";
 
 		expectedException.expect(NullPointException.class);
@@ -358,9 +313,6 @@ public class UserResourseMock {
 	@Test
 	public void getAllUsersByTeamId() {
 
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
-
 		Response response = webTarget.path("/2").request(MediaType.APPLICATION_JSON).header(header, token).get();
 
 		assertEquals(OK, response.getStatusInfo());
@@ -369,9 +321,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfTeamIdIsWrong() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
 
 		String exceptionMessage = "The team does not exist!";
 
@@ -389,9 +338,6 @@ public class UserResourseMock {
 
 	@Test
 	public void shouldThrowsNullPointExceptionIfTeamIdIsNull() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
 
 		String exceptionMessage = "Unable to find users from Team.";
 

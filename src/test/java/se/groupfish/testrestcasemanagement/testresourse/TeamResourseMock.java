@@ -6,6 +6,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +31,7 @@ import se.groupfish.springcasemanagement.service.TeamService;
 import se.groupfish.springcasemanagement.service.UserService;
 
 @RunWith(SpringRunner.class)
-public class TeamResourseMock {
+public final class TeamResourseMock {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -41,8 +43,8 @@ public class TeamResourseMock {
 	private UserService userService;
 
 	private static Client client;
-
-	private String targetUrl;
+	private static String targetUrl;
+	private static WebTarget webTarget;
 
 	private final String header = "Authorization";
 	private final String token = "auth";
@@ -52,15 +54,18 @@ public class TeamResourseMock {
 		client = ClientBuilder.newClient();
 	}
 
+	@Before
+	public void Url() {
+		targetUrl = "http://localhost:8080";
+		webTarget = client.target(targetUrl);
+	}
+
 	@Test
 	public void shouldSaveTeam() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
+		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("Sankt-Petersburg").setState("Active").build("1");
 
-		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("Yokohama").setState("Active").build("1");
-
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/teams").request(MediaType.APPLICATION_JSON).header(header, token)
 				.post(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
 
 		assertEquals(CREATED, response.getStatusInfo());
@@ -69,9 +74,6 @@ public class TeamResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfTeamIsAlreadyExists() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("Yokohama").setState("Active").build("1");
 
@@ -84,7 +86,7 @@ public class TeamResourseMock {
 
 		teamService.createTeam(toEntity(dtoTeam));
 
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/teams").request(MediaType.APPLICATION_JSON).header(header, token)
 				.post(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
 
 		assertEquals(BAD_REQUEST, response.getStatusInfo());
@@ -92,9 +94,6 @@ public class TeamResourseMock {
 
 	@Test
 	public void shouldThrowsNullPointExceptionWhenCreatingEmptyTeam() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("").setState("").build("1");
 
@@ -107,7 +106,7 @@ public class TeamResourseMock {
 
 		teamService.createTeam(toEntity(dtoTeam));
 
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/teams").request(MediaType.APPLICATION_JSON).header(header, token)
 				.post(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
 
 		assertEquals(NO_CONTENT, response.getStatusInfo());
@@ -116,16 +115,9 @@ public class TeamResourseMock {
 	@Test
 	public void shouldUpdateTeam() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
+		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("Piter").build("1");
 
-		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("Sanihatama").build("1");
-
-		when(teamService.updateTeamName(108l, "Sanihatama")).thenReturn(toEntity(dtoTeam));
-
-		teamService.updateTeamName(108l, "Sanihatama");
-
-		Response response = webTarget.path("/108").request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("teams/118").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
@@ -134,9 +126,6 @@ public class TeamResourseMock {
 
 	@Test
 	public void shouldThrowBadRequestExceptionIfTeamNameIsAlreadyExists() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("Sanihatama").build("1");
 
@@ -149,7 +138,7 @@ public class TeamResourseMock {
 
 		teamService.updateTeamName(108l, "Sanihatama");
 
-		Response response = webTarget.path("/108").request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("teams/108").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
 
 		assertEquals(BAD_REQUEST, response.getStatusInfo());
@@ -157,9 +146,6 @@ public class TeamResourseMock {
 
 	@Test
 	public void shouldThrowsNullPointExceptionWhenUpdatingWithEmptyTeamName() throws ServiceException {
-
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
 
 		DTOTeam dtoTeam = DTOTeam.builder().setTeamName("").build("1");
 
@@ -172,7 +158,7 @@ public class TeamResourseMock {
 
 		teamService.updateTeamName(108l, "");
 
-		Response response = webTarget.path("/108").request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("teams/108").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
 
 		assertEquals(NO_CONTENT, response.getStatusInfo());
@@ -181,10 +167,7 @@ public class TeamResourseMock {
 	@Test
 	public void shouldGetAllTeams() {
 
-		targetUrl = "http://localhost:8080/teams";
-		WebTarget webTarget = client.target(targetUrl);
-
-		Response response = webTarget.request(MediaType.APPLICATION_JSON).header(header, token).get();
+		Response response = webTarget.path("/teams").request(MediaType.APPLICATION_JSON).header(header, token).get();
 
 		assertEquals(OK, response.getStatusInfo());
 
@@ -193,25 +176,11 @@ public class TeamResourseMock {
 	@Test
 	public void shouldAddUserToTeam() throws ServiceException {
 
-		targetUrl = "http://localhost:8080/users";
-		WebTarget webTarget = client.target(targetUrl);
+		DTOTeam dtoTeam = DTOTeam.builder().setId(117L).build("1");
 
-		DTOTeam dtoTeam = DTOTeam.builder().setId(109L).build("1");
-
-		Response response = webTarget.path("/104").request(MediaType.APPLICATION_JSON).header(header, token)
-				.put(Entity.entity(dtoTeam, MediaType.APPLICATION_JSON));
+		Response response = webTarget.path("users/15").request(MediaType.APPLICATION_JSON).header(header, token)
+				.put(Entity.entity(dtoTeam.getId(), MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
-
-		/*
-		 * Lite osäkert att det funkar som ska...
-		 */
-
-		/*
-		 * - Lägga till en User till ett team
-             Affärslogik:
-           - Det får max vara 10 users i ett team
-           - En User kan bara ingå i ett team åt gången
-		 */
 	}
 }

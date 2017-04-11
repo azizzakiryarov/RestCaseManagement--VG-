@@ -35,7 +35,7 @@ import se.groupfish.springcasemanagement.exception.ServiceException;
 import se.groupfish.springcasemanagement.service.WorkItemService;
 
 @RunWith(SpringRunner.class)
-public class WorkItemResourseMock {
+public final class WorkItemResourseMock {
 
 	@Rule
 	public ExpectedException expectedException = ExpectedException.none();
@@ -56,7 +56,7 @@ public class WorkItemResourseMock {
 	}
 
 	@Before
-	public void LinkToValues() {
+	public void Url() {
 		targetUrl = "http://localhost:8080/workitems";
 		webTarget = client.target(targetUrl);
 	}
@@ -121,7 +121,7 @@ public class WorkItemResourseMock {
 
 		DTOWorkItem dtoWorkItem = DTOWorkItem.builder().setState("Done").build("1");
 
-		Response response = webTarget.path("/69").request(MediaType.APPLICATION_JSON).header(header, token)
+		Response response = webTarget.path("/74").request(MediaType.APPLICATION_JSON).header(header, token)
 				.put(Entity.entity(dtoWorkItem, MediaType.APPLICATION_JSON));
 
 		assertEquals(OK, response.getStatusInfo());
@@ -213,7 +213,7 @@ public class WorkItemResourseMock {
 	}
 
 	@Test
-	public void shouldAddWorkItemToOneUser() { // Fix it!!!
+	public void shouldAddWorkItemToOneUser() {
 
 		DTOUser dtoUser = DTOUser.builder().setId(15l).build("UserId");
 
