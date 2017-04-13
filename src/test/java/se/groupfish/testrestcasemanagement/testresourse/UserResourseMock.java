@@ -238,7 +238,6 @@ public final class UserResourseMock {
 		doThrow(new BadRequestException(exceptionMessage)).when(userService).findUserByNumber("00000000");
 
 		userService.findUserByNumber("00000000");
-		;
 
 		Response response = webTarget.queryParam("userNumber", "00000000").request(MediaType.APPLICATION_JSON)
 				.header(header, token).get();
