@@ -25,7 +25,7 @@ public final class JerseyConfig extends ResourceConfig {
 		register(NotFoundExceptionMapper.class);
 		register(NullPointExceptionMapper.class);
 		register(WebInternalErrorExceptionMapper.class);
-		register(RequestFilter.class);
+		//register(RequestFilter.class);
 	}
 
 }

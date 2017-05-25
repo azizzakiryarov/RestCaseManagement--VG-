@@ -17,6 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.StatusType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.groupfish.restcasemanagement.data.DTOIssue;
@@ -78,25 +80,24 @@ public final class WorkItemResource {
 		workItemService.removeWorkItem(id);
 		return Response.status(Status.OK).build();
 	}
-
+	
 	@GET
 	public Response getAllWorkItemsByStateByTeamIdByUserId(@QueryParam("state") String state,
 			@QueryParam("teamId") Long teamId, @QueryParam("userId") Long userId) {
 
 		Collection<DTOWorkItem> getAllWorkItems = null;
-
-		if (state != null) {
-			getAllWorkItems = workItemService.getAllDTOWorkItemsByState(state);
+		
+	    if (state != null) {
+			getAllWorkItems = workItemService.getAllDTOWorkItemsByState(state);	
 		}
 
 		else if (teamId != null) {
 			getAllWorkItems = workItemService.getAllDTOWorkItemsByTeam(teamId);
 		}
-
 		else if (userId != null) {
 			getAllWorkItems = workItemService.getAllDTOWorkItemsByUser(userId);
 		}
-		return Response.ok(getAllWorkItems).build();
+	    return Response.ok(getAllWorkItems).build();
 	}
 
 	@GET
