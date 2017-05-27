@@ -8,6 +8,7 @@ import se.groupfish.springcasemanagement.model.WorkItem;
 import se.groupfish.springcasemanagement.service.IssueService;
 import se.groupfish.springcasemanagement.service.WorkItemService;
 import static se.groupfish.restcasemanagement.data.DTOWorkItem.toEntity;
+import static se.groupfish.restcasemanagement.data.DTOWorkItem.toDTO;
 import static se.groupfish.restcasemanagement.data.DTOWorkItem.workItemsListToDTOWorkItemList;
 import java.io.IOException;
 import java.util.Collection;
@@ -129,6 +130,19 @@ public final class RestWorkItemService {
 		} catch (ServiceException e1) {
 			throw new BadRequestException(e1.getMessage());
 		} catch (NullPointerException e2) {
+			throw new NullPointException(e2.getMessage());
+		}
+	}
+
+	public DTOWorkItem getWorkItemById(Long id) {
+
+		try {
+			WorkItem workItem = workItemService.getWorkItemById(id);
+			DTOWorkItem dtoWorkItem = toDTO(workItem);
+			return dtoWorkItem;
+		} catch (ServiceException e1) {
+			throw new BadRequestException(e1.getMessage());
+		} catch (NullPointException e2) {
 			throw new NullPointException(e2.getMessage());
 		}
 	}

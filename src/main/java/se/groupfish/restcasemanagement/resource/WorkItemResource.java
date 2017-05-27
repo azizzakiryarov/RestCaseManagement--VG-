@@ -2,7 +2,7 @@ package se.groupfish.restcasemanagement.resource;
 
 import java.net.URI;
 import java.util.Collection;
-
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,12 +17,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.groupfish.restcasemanagement.data.DTOIssue;
 import se.groupfish.restcasemanagement.data.DTOWorkItem;
+import se.groupfish.restcasemanagement.data.WorkItemRequestBean;
 import se.groupfish.restcasemanagement.service.RestIssueService;
 import se.groupfish.restcasemanagement.service.RestWorkItemService;
 import se.groupfish.springcasemanagement.model.WorkItem;
@@ -80,24 +79,39 @@ public final class WorkItemResource {
 		workItemService.removeWorkItem(id);
 		return Response.status(Status.OK).build();
 	}
-	
+
 	@GET
-	public Response getAllWorkItemsByStateByTeamIdByUserId(@QueryParam("state") String state,
-			@QueryParam("teamId") Long teamId, @QueryParam("userId") Long userId) {
+	@Path("/getByState")
+	public Response getAllWorkItemsByState(@QueryParam("state") String state) {
+
+		if (state != null) {
+			Collection<DTOWorkItem> getAllWorkItems = workItemService.getAllDTOWorkItemsByState(state);
+			return Response.ok(getAllWorkItems).build();
+		} else
+			return Response.status(Status.BAD_REQUEST).build();
+	}
+
+	@GET
+	public Response getAllWorkItemsByTeamIdByUserId(@BeanParam WorkItemRequestBean request) {
 
 		Collection<DTOWorkItem> getAllWorkItems = null;
-		
-	    if (state != null) {
-			getAllWorkItems = workItemService.getAllDTOWorkItemsByState(state);	
-		}
 
-		else if (teamId != null) {
-			getAllWorkItems = workItemService.getAllDTOWorkItemsByTeam(teamId);
+		if (request.getTeamId() != null) {
+			getAllWorkItems = workItemService.getAllDTOWorkItemsByTeam(request.getTeamId());
+		} else if (request.getUserId() != null) {
+			getAllWorkItems = workItemService.getAllDTOWorkItemsByUser(request.getUserId());
 		}
-		else if (userId != null) {
-			getAllWorkItems = workItemService.getAllDTOWorkItemsByUser(userId);
-		}
-	    return Response.ok(getAllWorkItems).build();
+		return Response.ok(getAllWorkItems).build();
+	}
+
+	@GET
+	@Path("/getById/{id}")
+	public Response getWorkItemsById(@PathParam("id") Long id) {
+
+		DTOWorkItem workItem = workItemService.getWorkItemById(id);
+
+		return Response.ok(workItem).build();
+
 	}
 
 	@GET
